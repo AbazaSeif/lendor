@@ -29,21 +29,33 @@ $app->get("/", function ($req, $res, $args) {
 });
 
 // Login route
-$app->any("/login", function ($req, $res, $args) {
+// GET
+$app->get("/login", function ($req, $res, $args) {
+    // Simple render the page, no logic needed 
+    return $this->view->render($res, "login.html", []);
+});
+
+// Login route
+// POST
+$app->post("/login", function ($req, $res, $args) {
+    // Store POST parameters
+    $params = $req->getParsedBody();
     // If user is logged in
     if (logged_in()) {
         // No need to log in twice, redirect to index
         return $res->withHeader("Location", "/");
     }
     // Store user or false on valid login check
-    if ($user = valid_login($req->getParsedBody())) {
+    if ($user = valid_login($params)) {
         // On valid login, set user id token
         $_SESSION["user_id"] = $user->id;
         // Redirect to index
         return $res->withHeader("Location", "/");
     }
     // User not authenticated, redraw the login page
-    return $this->view->render($res, "login.html", []);
+    return $this->view->render($res, "login.html", [
+        "error" => "Invalid username and password combination"
+    ]);
 });
 
 // Logout rout

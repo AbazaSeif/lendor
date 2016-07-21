@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
-        <title>Lendor - Login</title>
+        <title>Lendor - Log In</title>
         <link rel="stylesheet" href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css"></link>
     </head>
     <body>
@@ -16,6 +16,11 @@
                         <input type="text" class="form-control" name="username" placeholder="Username">
                         <input type="password" class="form-control" name="password" placeholder="Password">
                         <button type="submit" class="form-control btn btn-primary">Log In</button>
+                        {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endif %}
                     </div>
                 </form> 
             </div>
