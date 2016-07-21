@@ -1,6 +1,6 @@
 {% include "header.html" %}
 <div class="container">
-    <nav class="navbar navlbar-light bg-faded"> 
+    <nav class="navbar navlbar-light bg-faded">
         <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" 
                 data-target="#navbar-header" aria-controls="navbar-header">&#9776;
         </button>
@@ -25,5 +25,8 @@
             </ul>
         </div>
     </nav>
+    <input type="text" class="form-control" placeholder="Username" value="{{ profile.username }}" disabled>
+    <input type="text" class="form-control" placeholder="Email Address" value="{{ profile.email }}">
+    <input type="text" class="form-control" placeholder="User Role" value="{{ profile.role }}">
 </div>
 {% include "footer.html" %}

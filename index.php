@@ -24,8 +24,11 @@ $app->get("/", function ($req, $res, $args) {
         // Redirect to the login page
         return $res->withHeader("Location", "/login");
     }
-    // Draw the index page 
-    return $this->view->render($res, "index.html", ["username" => $user->username]);
+    // Render the index page
+    return $this->view->render($res, "index.html", [
+        "role" => $user->role,
+        "username" => $user->username
+    ]);
 });
 
 // Login route
@@ -56,6 +59,34 @@ $app->post("/login", function ($req, $res, $args) {
     return $this->view->render($res, "login.html", [
         "error" => "Invalid username and password combination"
     ]);
+});
+
+$app->get("/profile/{username}", function ($req, $res, $args) {
+    // Get the url given username
+    $username = $req->getAttribute("username");
+    // Only allow users that are logged in
+    if (!($user = logged_in())) {
+        // Redirect to the login page
+        return $res->withHeader("Location", "/login");
+    }
+    try {
+        // Obtain the user profile
+        $profile = User::where("username", "=", $username)->firstOrFail();
+        // Check to make sure that the current user matches or is an administrator
+        if ($user->username == $profile->username || $user->role == "administrator") {
+            // Display the profile page
+            return $this->view->render($res, "profile.html", [
+                "role" => $user->role,
+                "username" => $username,
+                "profile" => $profile
+            ]);
+        }
+        // Forbidden user, return 403 status
+        return $res->withStatus(403);
+    } catch (Exception $e) {
+        // User profile does not exist, return error 404
+        return $res->withStatus(404);
+    }
 });
 
 // Logout rout
