@@ -2,6 +2,20 @@
 
 // Usage aliases
 use \Illuminate\Database\Capsule\Manager as Capsule;
+use \Slim\Views\TwigExtension as TwigExtension;
+use \Slim\Views\Twig as Twig;
+
+// Start a session
+session_start();
+
+// Initialize slim with configuration
+$app = new \Slim\App($config);
+// Slim app container
+$container = $app->getContainer();
+
+$container["view"] = function ($container) {
+    return new Twig("templates");
+};
 
 // Eqloquent database capusle manager
 $capsule = new Capsule;

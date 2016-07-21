@@ -10,6 +10,17 @@ class User extends Model {
     // Table for this model
     protected $table = "user";
 
+    // Allowed fields
+    protected $fillable = [
+        "username",
+        "password",
+        "firstname",
+        "lastname",
+        "email",
+        "role",
+        "remote"
+    ];
+
     // Database migration
     public static function migrate () {
         // If the user table does not exist
@@ -20,13 +31,20 @@ class User extends Model {
                 $table->increments("id");
                 $table->string("username");
                 $table->string("password");
-                $table->string("firstname");
-                $table->string("lastname");
-                $table->string("email");
-                $table->integer("role");
+                $table->string("firstname")->nullable();
+                $table->string("lastname")->nullable();
+                $table->string("email")->nullable();
+                $table->string("role");
                 $table->boolean("remote");
                 $table->timestamps();
             });
+            // Create initial admin user
+            User::create([
+                "username" => "admin",
+                "password" => password_hash("admin", PASSWORD_DEFAULT),
+                "role" => "administrator",
+                "remote" => false
+            ]);
         }
     }
 }

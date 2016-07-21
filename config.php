@@ -1,10 +1,9 @@
 <?php
 
-// Initialize configuration
 $config = [
-    // Display error details
-    "displayErrorDetails" => true,
-    // Eloquent database connection
+    "settings" => [
+        "displayErrorDetails" => true,
+    ],
     "db" => [
         "driver" => "mysql",
         "host" => "localhost",
