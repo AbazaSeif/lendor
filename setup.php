@@ -9,13 +9,7 @@ use \Slim\Views\Twig as Twig;
 session_start();
 
 // Initialize slim with configuration
-$app = new \Slim\App($config);
-// Slim app container
-$container = $app->getContainer();
-
-$container["view"] = function ($container) {
-    return new Twig("templates");
-};
+$app = new \Slim\Slim($config["settings"]);
 
 // Eqloquent database capusle manager
 $capsule = new Capsule;

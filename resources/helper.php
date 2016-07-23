@@ -1,0 +1,17 @@
+<?php
+
+// Helper function class
+class Helper {
+    // Check if user is authenticated
+    // Return the user if they are
+    // Redirect toward a given route if they are not
+    public static  function auth ($app, $route) {
+        return function () use ($app, $route) {
+            try {
+                return User::findOrFail($_SESSION["user_id"]);
+            } catch (Exception $e) {
+                $app->redirect($route);
+            }
+        };
+    }
+}

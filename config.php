@@ -2,7 +2,8 @@
 
 $config = [
     "settings" => [
-        "displayErrorDetails" => true,
+        "debug" => true,
+        "templates.path" => "templates"
     ],
     "db" => [
         "driver" => "mysql",
