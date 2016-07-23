@@ -6,9 +6,8 @@ ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
 // Dependencies
-require "vendor/autoload.php";
-require "config.php";
-require "setup.php";
-require "routes.php";
-require "shutdown.php";
-
+require_once "vendor/autoload.php";
+require_once "config.php";
+require_once "setup.php";
+require_once "routes.php";
+require_once "shutdown.php";

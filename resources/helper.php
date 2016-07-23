@@ -31,16 +31,16 @@ class Helper {
             // Encapsulate any errors
             try {
                 // Set the user id, either given to use or obtained from the session
-                $id = array_key_exists($args, "id") ? $args["id"] : $_SESSION["user_id"];
+                $id = array_key_exists("id", $args) ? $args["id"] : $_SESSION["user_id"];
                 // Obtain the current user or fail
                 $user = User::findOrFail($id);
                 // Perform check if role checking is specified
-                if (array_key_exists($args, "role")) {
+                if (array_key_exists("role", $args)) {
                     // Throw exception upon mismatching roles
                     if ($user->role != $args["role"]) { throw new Exception(); }
                 }
                 // Perform check if username is specified
-                if (array_key_exists($args, "username")) {
+                if (array_key_exists("username", $args)) {
                     // Throw exception upon mismatching usernames
                     if ($user->username != $args["username"]) { throw new Exception(); }
                 }
@@ -81,4 +81,35 @@ class Helper {
         // Call and return the function
         return $auth();
     }
+
+	/*
+     *
+     * Check whether a username password combination is valid
+     * Returns a user model on a correct combination
+	 * Returns false on an incorrect combination
+     *
+     * @param $args - Required - See below
+     *
+     * $args["username"] Required - The username to verify
+     * $args["password"] Optional - The password to verify
+     *
+     * @return User, or false
+     *
+     */ 
+	public static function valid_login ($args) {
+		// Make sure the username and password are provided to use
+		if (array_key_exists("username", $args) && array_key_exists("password", $args)) {
+			// Ecapsulate any thrown exceptions
+			try {
+				// Grab the user with the specified username or throw an exception
+				$user = User::where("username", "=", $args["username"])->firstOrFail();
+				// Return whether or not the login was valid, if true return the user
+				return password_verify($args["password"], $user->password) ? $user : false;
+			}
+			// Do nothing on a thrown error
+			catch (Exception $e) {}
+		}
+		// Default to false
+		return false;
+	}
 }

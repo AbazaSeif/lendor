@@ -1,18 +1,19 @@
 <?php
 
-// Usage aliases
-use \Illuminate\Database\Capsule\Manager as Capsule;
-use \Slim\Views\TwigExtension as TwigExtension;
-use \Slim\Views\Twig as Twig;
-
 // Start a session
 session_start();
 
+// Initialize the twig renderer
+//$loader = new Twig_Loader_Filesystem("templates");
+//$twig = new Twig_Environment($loader);
+
 // Initialize slim with configuration
-$app = new \Slim\Slim($config["settings"]);
+$app = new \Slim\Slim(array_merge($config["slim"], [
+	"view" => new View("templates")
+]));
 
 // Eqloquent database capusle manager
-$capsule = new Capsule;
+$capsule = new \Illuminate\Database\Capsule\Manager;
 // Add connection to the capsule
 $capsule->addConnection($config["db"]);
 // Set capsule as global

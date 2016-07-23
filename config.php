@@ -1,10 +1,14 @@
 <?php
 
 $config = [
-    "settings" => [
-        "debug" => true,
-        "templates.path" => "templates"
-    ],
+	// Slim v2 settings
+	// See - http://docs.slimframework.com/configuration/settings/
+    "slim" => [
+		"mode" => "development",
+		"debug" => true
+	],
+	// Eloquent settings
+	// See - TODO
     "db" => [
         "driver" => "mysql",
         "host" => "localhost",

@@ -3,8 +3,8 @@
         "slim/slim": "^2",
         "illuminate/database": "^5.2",
         "twbs/bootstrap": "^v4.0.0-alpha",
-        "slim/twig-view": "^2.1",
-        "components/jquery": "^2"
+        "components/jquery": "^2",
+        "twig/twig": "^1.24"
     },
     "autoload": {
         "classmap": [
