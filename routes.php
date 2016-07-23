@@ -10,9 +10,10 @@ $app->get("/", function () use ($app, $twig) {
 	]);
 	// Render the index page
     echo $twig->render("index.html", [
+		// Page title
 		"title" => "Lendor - Home",
-		"username" => $user->username,
-		"role" => $user->role
+		// Current user
+		"user" => $user
 	]);
 });
 
@@ -49,13 +50,44 @@ $app->map("/login", function () use ($app, $twig) {
 	}
 })->via("GET", "POST");
 
+// Profile route
+// GET
 $app->get("/profile/:username", function ($username) use ($app, $twig) {
+	// Encapsulate any errors
+	try {
+		// Obtain the profile to view or fail
+		$profile = User::where("username", "=", $username)->firstOrFail();
+	}
+	// Profile could not be found
+	catch (Exception $e) {
+		// Set status to 404
+		$app->response->setStatus(404);
+		// Return from the function
+		return;
+	}
+	// Require authentication
 	$user = Helper::auth_call([
-		// Redirect to index page
-		"redirect" => "/",
+		// 403 forbidden status
+		"status" => 403,
+		// Only require one filter
+		"combine" => false,
 		// Require matching name
-		"username" => $username
+		"username" => $username,
+		// Require administrator role
+		"role" => "administrator"
 	]);
+	// If the authentication succeeded
+	if ($user) {
+		// Render the profile page
+		echo $twig->render("profile.html", [
+			// Page title
+			"title" => "Lendor - Profile",
+			// Current user
+			"user" => $user,
+			// Viewed profile
+			"profile" => $profile
+		]);
+	}
 });
 
 // Logout route

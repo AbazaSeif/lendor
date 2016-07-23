@@ -11,9 +11,10 @@ class Helper {
      * Afterwards, filters based on optional arguments provided
      * Will return a User model upon validation, otherwise null
      *
-     * @param $args - Required - See below
+     * @param $args - Optional - See below
      *
-     * $args["redirect"] Optional - Route to redirect to upon authentication fail, defaults to "/"
+     * $args["redirect"] Optional - Route to redirect to upon authentication fail, defaults to false
+     * $args["status"]   Optional - Status to set the page to when redirecting, defaults to 200 OK status
      * $args["combine"]  Optional - True filters based on &&, false filters based on ||, defaults to true
      * $args["username"] Optional - Username needed for the user to pass authentication, defaults to none
      * $args["role"]     Optional - Role needed for the user to pass authentication, defaults to none
@@ -31,11 +32,17 @@ class Helper {
             try {
 				// Default the given arguments
 				$args = array_merge([
-					// Default redirect to /
-					"redirect" => "/",
+					// Default redirect to current route
+					"redirect" => false,
+					// Default to 200 OK status
+					"status" => 200,
 					// Default combine to true
 					"combine" => true,
-					// Default to session ID
+				], $args);
+				// This might throw an error
+				// We need the above args to be set
+				$args = array_merge([
+					// Default user id to session user id
 					"id" => $_SESSION["user_id"]
 				], $args);
                 // Obtain the current user or fail
@@ -67,8 +74,18 @@ class Helper {
             }
             // Catch any thrown errors
             catch (Exception $e) {
-                // Redirect to specified route
-                $app->redirect($args["redirect"]);
+				// If the redirect route was given
+				if ($args["redirect"]) {
+					// Redirect to specified route
+					$app->redirect($args["redirect"], $args["status"]);
+				}
+				// If the redirect route was not given
+				else {
+					// Set the status
+					$app->response->setStatus($args["status"]);
+				}
+				// Return false
+				return false;
             }
             // Return the obtained user, or null
             return $user;
@@ -83,9 +100,10 @@ class Helper {
      * Afterwards, filters based on optional arguments provided
      * Will return a User model upon validation, otherwise null
      *
-     * @param $args - Required - See below
-     *
-	 * $args["redirect"] Optional - Route to redirect to upon authentication fail, defaults to "/"
+     * @param $args - Optional - See below
+	 *
+     * $args["redirect"] Optional - Route to redirect to upon authentication fail, defaults to false
+     * $args["status"]   Optional - Status to set the page to when redirecting, defaults to 200 OK status
      * $args["combine"]  Optional - True filters based on &&, false filters based on ||, defaults to true
      * $args["username"] Optional - Username needed for the user to pass authentication, defaults to none
      * $args["role"]     Optional - Role needed for the user to pass authentication, defaults to none
