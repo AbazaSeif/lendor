@@ -7,7 +7,6 @@ error_reporting(E_ALL);
 
 // Dependencies
 require "vendor/autoload.php";
-require "functions.php";
 require "config.php";
 require "setup.php";
 require "routes.php";

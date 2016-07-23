@@ -1,10 +1,10 @@
 <?php
 
-$app->get("/", function () {
+$app->get("/", Helper::auth(["redirect" => "/login"]), function () {
     echo "Index";
 });
 
-$app->get("/login", Helper::auth($app, "/"), function () {
+$app->get("/login", function () {
     echo "Login";
 });
 
