@@ -13,37 +13,57 @@ class Helper {
      *
      * @param $args - Required - See below
      *
-     * $args["redirect"] Required - Route to redirect to upon authentication fail
-     * $args["username"] Optional - Username needed for the user to pass authentication
-     * $args["role"]     Optional - Role needed for the user to pass authentication
-     * $args["id"]       Optional - User ID to use. Defaults to $_SESSION["user_id"]
-
-     * @param &$user - Optional - Any obtained user will set into this variable
+     * $args["redirect"] Optional - Route to redirect to upon authentication fail, defaults to "/"
+     * $args["combine"]  Optional - True filters based on &&, false filters based on ||, defaults to true
+     * $args["username"] Optional - Username needed for the user to pass authentication, defaults to none
+     * $args["role"]     Optional - Role needed for the user to pass authentication, defaults to none
+     * $args["id"]       Optional - User ID to use, defaults to $_SESSION["user_id"]
      *
      * @return function (function returns User or null)
      *
      */ 
-    public static function auth ($args, &$user=null) {
+    public static function auth ($args=[]) {
         // For some dumb reason this is needed
-        return function () use ($args, &$user) {
+        return function () use ($args) {
             // Obtain the slim application
             $app = \Slim\Slim::getInstance();
             // Encapsulate any errors
             try {
-                // Set the user id, either given to use or obtained from the session
-                $id = array_key_exists("id", $args) ? $args["id"] : $_SESSION["user_id"];
+				// Default the given arguments
+				$args = array_merge([
+					// Default redirect to /
+					"redirect" => "/",
+					// Default combine to true
+					"combine" => true,
+					// Default to session ID
+					"id" => $_SESSION["user_id"]
+				], $args);
                 // Obtain the current user or fail
-                $user = User::findOrFail($id);
+                $user = User::findOrFail($args["id"]);
+				// Default username check to true
+				$username_check = true;
+				// Default role check to true
+				$role_check = true;
                 // Perform check if role checking is specified
                 if (array_key_exists("role", $args)) {
-                    // Throw exception upon mismatching roles
-                    if ($user->role != $args["role"]) { throw new Exception(); }
+                    // Reset role check to false if given invalid role
+                    if ($user->role != $args["role"]) { $role_check = false; }
                 }
                 // Perform check if username is specified
                 if (array_key_exists("username", $args)) {
-                    // Throw exception upon mismatching usernames
-                    if ($user->username != $args["username"]) { throw new Exception(); }
+                    // Reset username check to false if given invalid username
+                    if ($user->username != $args["username"]) { $username_check = false; }
                 }
+				// Check based on &&
+				if ($args["combine"]) {
+					// Check based on &&, throw an exception on fail
+					if (!($username_check && $role_check)) { throw new Exception(); }
+				}
+				// Check based on ||
+				else {
+					// Check based on ||, throw an exception on fail
+					if (!($username_check || $role_check)) { throw new Exception(); }
+				}
             }
             // Catch any thrown errors
             catch (Exception $e) {
@@ -65,19 +85,18 @@ class Helper {
      *
      * @param $args - Required - See below
      *
-     * $args["redirect"] Required - Route to redirect to upon authentication fail
-     * $args["username"] Optional - Username needed for the user to pass authentication
-     * $args["role"]     Optional - Role needed for the user to pass authentication
-     * $args["id"]       Optional - User ID to use. Defaults to $_SESSION["user_id"]
+	 * $args["redirect"] Optional - Route to redirect to upon authentication fail, defaults to "/"
+     * $args["combine"]  Optional - True filters based on &&, false filters based on ||, defaults to true
+     * $args["username"] Optional - Username needed for the user to pass authentication, defaults to none
+     * $args["role"]     Optional - Role needed for the user to pass authentication, defaults to none
+     * $args["id"]       Optional - User ID to use, defaults to $_SESSION["user_id"]
      *
-     * @param &$user - Optional - Any obtained user will set into this variable
-     *
-     * @return User, or null
+	 * @return User, or null
      *
      */ 
-    public static function auth_call ($args, &$user=null) {
+    public static function auth_call ($args=[]) {
         // Obtain the returned function
-        $auth = self::auth($args, $user);
+        $auth = self::auth($args);
         // Call and return the function
         return $auth();
     }
