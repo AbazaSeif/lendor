@@ -65,14 +65,20 @@
 			</div>
 			{% if error %}
 			<div class="form-group col-xs-12">
-				<div class="text-xs-center alert alert-danger" role="alert">
+				<div class="text-xs-center alert alert-danger alert-dismissable fade in" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+					</button>
 					{{ error }}
 				</div>
 			</div>
 			{% endif %}
 			{% if success %}
 			<div class="form-group col-xs-12">
-				<div class="text-xs-center alert alert-success" role="alert">
+				<div class="text-xs-center alert alert-success alert-dismissable fade in" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+					</button>
 					{{ success }}
 				</div>
 			</div>

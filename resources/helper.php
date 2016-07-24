@@ -178,17 +178,17 @@ class Helper {
 					"type" => $user->type,
 				]);
 			}
-			
-			// Check to make sure the username is not already taken
-			// Does not check if the username is the same as before
-			if ($user->username != $args["username"] && 
-				User::where("username", "=", $args["username"])->count() > 0) {
-				// Return an error
-				return ["error" => "Username already exists"];
-			}
+			try {
+				// Check to make sure the username is not already taken
+				// Does not check if the username is the same as before
+				if ($user->username != $args["username"] && 
+					User::where("username", "=", $args["username"])->first()) {
+					// Return an error
+					return ["error" => "Username already exists"];
+				}
+			} catch (Exception $e) {}
 			// Set the username
 			$user->username = $args["username"];
-
 			// Password was specified
 			if (!empty($args["password"])) {
 				// Check to make sure the passwords match
@@ -199,16 +199,12 @@ class Helper {
 				// Set the password as a hash
 				$user->password = password_hash($args["password"], PASSWORD_DEFAULT);
 			}
-			
 			// Set the first name
 			$user->firstname = $args["firstname"];
-			
 			// Set the last name
 			$user->lastname = $args["lastname"];
-			
 			// Set the email address
 			$user->email = $args["email"];
-			
 			// Set the user role
 			$user->role = $args["role"];
 			// Check to make sure the user role is valid
@@ -216,7 +212,6 @@ class Helper {
 				// Return an error
 				return ["error" => "Invalid user role"];
 			}
-			
 			// Set the user type
 			$user->type = $args["type"];
 			// Check to make sure the user type is valid
@@ -224,11 +219,10 @@ class Helper {
 				// Return an error
 				return ["error" => "Invalid user type"];
 			}
-			
 			// Save the user
 			$user->save();
 			// Return true
-			return true;
+			return $user;
 		}
 		// Catch any exceptions
 		catch (Exception $e) {

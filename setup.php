@@ -4,6 +4,7 @@
 date_default_timezone_set($config["misc"]["timezone"]);
 
 // Start a session
+session_cache_limiter(false);
 session_start();
 
 // Initialize the twig renderer

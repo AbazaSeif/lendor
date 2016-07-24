@@ -36,7 +36,7 @@ $app->map("/login", function () use ($app, $twig) {
 				// Page title
 				"title" => "Lendor - Log In",
 				// Error message
-				"error" => "Invalid username and password combination"
+				"error" => "Invalid username or password"
 			]);
 		}
 	}
@@ -81,9 +81,9 @@ $app->map("/profile/:username", function ($username) use ($app, $twig) {
 		// Get the post parameters
 		$post = $app->request->post();
 		// Attempt to update the user and store the status
-		$status = Helper::update_user($profile->id, $user->role, $post);
+		$updated_profile = Helper::update_user($profile->id, $user->role, $post);
 		// Status says there was an error
-		if (is_array($status)) {
+		if (is_array($updated_profile)) {
 			// Redner the profile page
 			echo $twig->render("profile.html", [
 				// Page title
@@ -93,13 +93,38 @@ $app->map("/profile/:username", function ($username) use ($app, $twig) {
 				// Viewed profile
 				"profile" => $profile,
 				// Error message
-				"error" => $status["error"]
+				"error" => $updated_profile["error"]
 			]);
 		}
 		// User update went off without a hitch
 		else {
-			// Obtain the profile again as it has updated
-			$profile = User::where("username", "=", $username)->firstOrFail();
+			// Username has changed
+			if ($username != $updated_profile->username) {
+				// Flash a message for the new route
+				$app->flash("success", "User has been updated");
+				// Redirect to the new user page
+				$app->redirect("/profile/" . $updated_profile->username);
+			}
+			// Username has stayed the same
+			else {
+				// Render the profile page
+				echo $twig->render("profile.html", [
+					// Page title
+					"title" => "Lendor - Profile",
+					// Current user
+					"user" => $user,
+					// Viewed profile
+					"profile" => $updated_profile,
+					// Success message
+					"success" => "User has been updated"
+				]);
+			}
+		}
+	}
+	// The request is GET
+	else {
+		// Username just changed
+		if (isset($_SESSION["slim.flash"]["success"])) {
 			// Render the profile page
 			echo $twig->render("profile.html", [
 				// Page title
@@ -109,21 +134,21 @@ $app->map("/profile/:username", function ($username) use ($app, $twig) {
 				// Viewed profile
 				"profile" => $profile,
 				// Success message
-				"success" => "User has been updated"
+				"success" => $_SESSION["slim.flash"]["success"]
 			]);
 		}
-	}
-	// The request is GET
-	else {
-		// Render the profile page
-		echo $twig->render("profile.html", [
-			// Page title
-			"title" => "Lendor - Profile",
-			// Current user
-			"user" => $user,
-			// Viewed profile
-			"profile" => $profile
-		]);
+		// Username is the same
+		else {
+			// Render the profile page
+			echo $twig->render("profile.html", [
+				// Page title
+				"title" => "Lendor - Profile",
+				// Current user
+				"user" => $user,
+				// Viewed profile
+				"profile" => $profile
+			]);
+		}
 	}
 })->via("GET", "POST");
 
