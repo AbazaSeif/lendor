@@ -152,6 +152,29 @@ $app->map("/profile/:username", function ($username) use ($app, $twig) {
 	}
 })->via("GET", "POST");
 
+// Administrator group
+$app->group("/admin", function () use ($app, $twig) {
+	// Users route
+	$app->get("/users", function () use ($app, $twig) {
+		// Obtain authenticated user
+		$user = Helper::auth_call([
+			// Forbidden status
+			"status" => 403,
+			// Require administrator role
+			"role" => "administrator",
+		]);
+		// Obtain all users
+		$users = User::all();
+		// Render the users page
+		echo $twig->render("users.html", [
+			// Page title
+			"title" => "Lendor - Users",
+			// Obtained users
+			"users" => $users
+		]);
+	});
+});
+
 // Logout route
 // GET
 $app->get("/logout", function () use ($app) {

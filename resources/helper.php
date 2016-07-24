@@ -39,6 +39,8 @@ class Helper {
 					// Default combine to true
 					"combine" => true,
 				], $args);
+				// Stop the annoying notices of undefined index for user_id
+				if (!isset($_SESSION["user_id"])) { throw new Exception(); }
 				// This might throw an error
 				// We need the above args to be set
 				$args = array_merge([
@@ -79,7 +81,7 @@ class Helper {
 					// Redirect to specified route
 					$app->redirect($args["redirect"], $args["status"]);
 					// Stop the request from going further
-					$app->stop();
+					//$app->stop();
 				}
 				// If the redirect route was not given
 				else {
