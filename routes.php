@@ -163,15 +163,59 @@ $app->group("/admin", function () use ($app, $twig) {
 			// Require administrator role
 			"role" => "administrator",
 		]);
-		// Obtain all users
-		$users = User::all();
 		// Render the users page
 		echo $twig->render("users.html", [
+			// Current user
+			"user" => $user,
 			// Page title
 			"title" => "Lendor - Users",
 			// Obtained users
-			"users" => $users
+			"users" => User::all()
 		]);
+	});
+	// Create user
+	$app->get("/createuser", function () use ($app, $twig) {
+		// Obtain authenticated user
+        $user = Helper::auth_call([
+            // Forbidden status
+            "status" => 403,
+            // Require administrator role
+            "role" => "administrator",
+        ]);
+        // Render the users page
+        echo $twig->render("createuser.html", [
+			// Current user
+			"user" => $user,
+            // Page title
+            "title" => "Lendor - Create User",
+        ]);
+	});
+	// Create user
+	$app->post("/createuser", function () use ($app, $twig) {
+		// Obtain the post parameters
+		$post = $app->request->post();
+		// Attempt to create the new uset
+		$profile = Helper::create_user($post);
+		// Creation returned with an error
+		if (is_array($profile)) {
+			// Render the users page
+			echo $twig->render("createuser.html", [
+				// Page title
+				"title" => "Lendor - Create User",
+				// Error message
+				"error" => $profile["error"]
+			]);
+		}
+		// Creation went off without a hitch
+		else {
+			// Render the users page
+			echo $twig->render("createuser.html", [
+				// Page title
+				"title" => "Lendor - Create User",
+				// Error message
+				"success" => "User has been created"
+			]);
+		}
 	});
 });
 

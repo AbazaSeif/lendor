@@ -232,4 +232,78 @@ class Helper {
 			return ["error" => $e];
 		}
 	}
+	
+	// Create a new user
+	public static function create_user ($args) {
+		// Default the arguments given
+		$args = array_merge([
+			"username" => "",
+			"password" => "",
+			"confirm_password" => "",
+			"firstname" => "",
+			"lastname" => "",
+			"email" => "",
+			"role" => "",
+			"type" => "",
+		], $args);
+		// Check for valid username
+		if (empty($args["username"])) {
+			// Return an error
+			return ["error" => "Username cannot be empty"];
+		}
+		// Check for unique username
+		try {
+			// Attempt to lookup an existing user
+			User::where()->firstOrFail();
+			// Return an error if a user is found
+			return ["error" => "Username already exists"];
+		} catch (Exception $e) {}
+		// Check for valid password
+		if (empty($args["password"])) {
+			// Return an error
+			return ["error" => "Password cannot be empty"];
+		}
+		// Check for matching password
+		if ($args["password"] != $args["confirm_password"]) {
+			// Return an error
+			return ["error" => "Password fields do not match"];
+		}
+		// Check for valid role
+		if ($args["role"] != "administrator" && $args["role"] != "authenticated") {
+			// Return an error
+			return ["error" => "Invalid user role"];
+		}
+		// Check for valid type
+		if ($args["type"] != "local" && $args["type"] != "remote") {
+			// Return an error
+			return ["error" => "Invalid user type"];
+		}
+		try {
+			// Create the user
+			$user = new User;
+			// Set the username
+			$user->username = $args["username"];
+			// Set the password
+			$user->password = password_hash($args["password"], PASSWORD_DEFAULT);
+			// Set the first name
+			$user->firstname = $args["firstname"];
+			// Set the last name
+			$user->lastname = $args["lastname"];
+			// Set the email
+			$user->email = $args["email"];
+			// Set the user role
+			$user->role = $args["role"];
+			// Set the user type
+			$user->type = $args["type"];
+			// Attempt to save the user
+			$user->save();
+			// Return the newly created user
+			return $user;
+		}
+		// Error while creating the user
+		catch (Exception $e) {
+			// Return an error
+			return ["error" => "An unknown error has occurred"];
+		}
+	}
 }
