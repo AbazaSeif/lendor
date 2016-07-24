@@ -124,6 +124,10 @@ $app->map("/profile/:username", function ($username) use ($app, $twig) {
 			}
 			// Username has stayed the same
 			else {
+				try {
+					// We need to fetch the user again as their role may have changed
+					$user = User::findOrFail($user->id);
+				} catch (Exception $e) {}
 				// Render the profile page
 				echo $twig->render("profile.html", [
 					// Page title
