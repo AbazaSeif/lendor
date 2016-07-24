@@ -80,6 +80,23 @@ $app->map("/profile/:username", function ($username) use ($app, $twig) {
 	if ($app->request->isPost()) {
 		// Get the post parameters
 		$post = $app->request->post();
+		// Delete request was set
+		if (isset($post["delete"])) {
+			// User must be administrator
+			if ($user->role == "administrator") {
+				// Delete the profile
+				$profile->delete();
+				// Redirect to the users page
+				$app->redirect("/admin/users");
+			}
+			// User is not administrator
+			else {
+				// Set the status
+				$app->response->setStatus(403);
+				// Stop the application
+				$app->stop();
+			}
+		}
 		// Attempt to update the user and store the status
 		$updated_profile = Helper::update_user($profile->id, $user->role, $post);
 		// Status says there was an error
@@ -192,6 +209,13 @@ $app->group("/admin", function () use ($app, $twig) {
 	});
 	// Create user
 	$app->post("/createuser", function () use ($app, $twig) {
+		// Obtain authenticated user
+        $user = Helper::auth_call([
+            // Forbidden status
+            "status" => 403,
+            // Require administrator role
+            "role" => "administrator",
+        ]);
 		// Obtain the post parameters
 		$post = $app->request->post();
 		// Attempt to create the new uset
@@ -202,6 +226,8 @@ $app->group("/admin", function () use ($app, $twig) {
 			echo $twig->render("createuser.html", [
 				// Page title
 				"title" => "Lendor - Create User",
+				// Current user
+				"user" => $user,
 				// Error message
 				"error" => $profile["error"]
 			]);
@@ -212,6 +238,8 @@ $app->group("/admin", function () use ($app, $twig) {
 			echo $twig->render("createuser.html", [
 				// Page title
 				"title" => "Lendor - Create User",
+				// Current user
+				"user" => $user,
 				// Error message
 				"success" => "User has been created"
 			]);
