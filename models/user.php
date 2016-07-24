@@ -18,7 +18,7 @@ class User extends Model {
         "lastname",
         "email",
         "role",
-        "remote"
+        "type"
     ];
 
     // Database migration
@@ -35,7 +35,7 @@ class User extends Model {
                 $table->string("lastname")->nullable();
                 $table->string("email")->nullable();
                 $table->string("role");
-                $table->boolean("remote");
+                $table->string("type");
                 $table->timestamps();
             });
             // Create initial admin user
@@ -43,7 +43,7 @@ class User extends Model {
                 "username" => "admin",
                 "password" => password_hash("admin", PASSWORD_DEFAULT),
                 "role" => "administrator",
-                "remote" => false
+                "type" => "local"
             ]);
         }
     }

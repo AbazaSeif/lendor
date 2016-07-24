@@ -1,5 +1,8 @@
 <?php
 
+// Set the default timezone
+date_default_timezone_set($config["misc"]["timezone"]);
+
 // Start a session
 session_start();
 

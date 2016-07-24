@@ -1,22 +1,84 @@
 {% include "header.html" %}
 <div class="container">
     {% include "navbar.html" %}
-	<div class="form-group">
-		<label for="username">Username</label>
-		<input type="text" class="form-control" id="username" value="{{ profile.username }}" disabled>
+	<div class="row">
+		<form method="post">
+			<div class="form-group col-md-6">
+				<label for="username">Username</label>
+				{% set disable = "disabled" %}
+				{% if user.role == "administrator" %}
+					{% set disable = "" %}
+				{% endif %}
+				<input type="text" class="form-control" name="username" value="{{ profile.username }}" {{ disable }}>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="firstname">First Name</label>
+				<input type="text" class="form-control" name="firstname" value="{{ profile.firstname }}">
+			</div>
+			<div class="form-group col-md-6">
+				<label for="lastname">Last Name</label>
+				<input type="text" class="form-control" name="lastname" value="{{ profile.lastname }}">
+			</div>
+			<div class="form-group col-md-6">
+				<label for="email">Email</label>
+				<input type="text" class="form-control" name="email" value="{{ profile.email }}">
+			</div>
+			{% if user.role == "administrator" %}
+			<div class="form-group col-md-6">
+				<label for="role">Role</label>
+				<select class="form-control c-select" name="role">
+					{% set administrator, authenticated = "", "" %}
+					{% if profile.role == "administrator" %}
+						{% set administrator = "selected" %}
+					{% elseif profile.role == "authenticated" %}
+						{% set authenticated = "selected" %}
+					{% endif %}
+					<option value="administrator" {{ administrator }}>Administrator</option>
+					<option value="authenticated" {{ authenticated }}>Authenticated</option>
+				</select>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="type">Type</label>
+				<select class="form-control c-select" name="type">
+					{% set local, remote = "", "" %}
+					{% if profile.type == "local" %}
+						{% set local = "selected" %}
+					{% elseif profile.type == "remote" %}
+						{% set remote = "selected" %}
+					{% endif %}
+					<option value="local" {{ local }}>Local</option>
+					<option value="remote" {{ remote }}>Remote</option>
+				</select>
+			</div>
+			{% if profile.type == "local" %}
+			<div class="form-group col-md-6">
+				<label for="password">New Password</label>
+				<input type="password" class="form-control" name="password">
+			</div>
+			<div class="form-group col-md-6">
+				<label for="confirm_password">Confirm Password</label>
+				<input type="password" class="form-control" name="confirm_password">
+			</div>
+			{% endif %}
+			<div class="form-group col-xs-12">
+				<button type="submit" class="form-control btn btn-success">Save</button>
+			</div>
+			{% if error %}
+			<div class="form-group col-xs-12">
+				<div class="text-xs-center alert alert-danger" role="alert">
+					{{ error }}
+				</div>
+			</div>
+			{% endif %}
+			{% if success %}
+			<div class="form-group col-xs-12">
+				<div class="text-xs-center alert alert-success" role="alert">
+					{{ success }}
+				</div>
+			</div>
+			{% endif %}
+		</form>
 	</div>
-	<div class="form-group">
-		<label for="firstname">First Name</label>
-		<input type="text" class="form-control" id="firstname" value="{{ profile.firstname }}">
-	</div>
-	<div class="form-group">
-		<label for="lastname">Last Name</label>
-		<input type="text" class="form-control" id="lastname" value="{{ profile.lastname }}">
-	</div>
-	<div class="form-group">
-		<label for="email">Email</label>
-		<input type="text" class="form-control" id="email" value="{{ profile.email }}">
-	</div>
+	{% endif %}
 </div>
 {% include "footer.html" %}
-

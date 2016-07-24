@@ -20,7 +20,7 @@ class Helper {
      * $args["role"]     Optional - Role needed for the user to pass authentication, defaults to none
      * $args["id"]       Optional - User ID to use, defaults to $_SESSION["user_id"]
      *
-     * @return function (function returns User or null)
+     * @return function (function returns User or false)
      *
      */ 
     public static function auth ($args=[]) {
@@ -78,11 +78,15 @@ class Helper {
 				if ($args["redirect"]) {
 					// Redirect to specified route
 					$app->redirect($args["redirect"], $args["status"]);
+					// Stop the request from going further
+					$app->stop();
 				}
 				// If the redirect route was not given
 				else {
 					// Set the status
 					$app->response->setStatus($args["status"]);
+					// Stop the request from going further
+					$app->stop();
 				}
 				// Return false
 				return false;
@@ -109,7 +113,7 @@ class Helper {
      * $args["role"]     Optional - Role needed for the user to pass authentication, defaults to none
      * $args["id"]       Optional - User ID to use, defaults to $_SESSION["user_id"]
      *
-	 * @return User, or null
+	 * @return User, or false
      *
      */ 
     public static function auth_call ($args=[]) {
@@ -148,5 +152,88 @@ class Helper {
 		}
 		// Default to false
 		return false;
+	}
+
+	public static function update_user ($id, $role, $args) {
+		// Encapsulate any errors
+		try {
+			// Grab the specified user or fail
+			$user = User::findOrFail($id);
+			// Default ungiven arguments to current arguments
+			// Don't set the password
+			$args = array_merge([
+				"username" => $user->username,
+				"firstname" => $user->firstname,
+				"lastname" => $user->lastname,
+				"email" => $user->email,
+				"role" => $user->role,
+				"type" => $user->type
+			], $args);
+			// If the updating user is not an administrator
+			if ($role != "administrator") {
+				// Reset given arguments back to originals
+				$args = array_merge($args, [
+					"username" => $user->username,
+					"role" => $user->role,
+					"type" => $user->type,
+				]);
+			}
+			
+			// Check to make sure the username is not already taken
+			// Does not check if the username is the same as before
+			if ($user->username != $args["username"] && 
+				User::where("username", "=", $args["username"])->count() > 0) {
+				// Return an error
+				return ["error" => "Username already exists"];
+			}
+			// Set the username
+			$user->username = $args["username"];
+
+			// Password was specified
+			if (!empty($args["password"])) {
+				// Check to make sure the passwords match
+				if ($args["password"] != $args["confirm_password"]) {
+					// Return an error
+					return ["error" => "Password fields do not match"];
+				}
+				// Set the password as a hash
+				$user->password = password_hash($args["password"], PASSWORD_DEFAULT);
+			}
+			
+			// Set the first name
+			$user->firstname = $args["firstname"];
+			
+			// Set the last name
+			$user->lastname = $args["lastname"];
+			
+			// Set the email address
+			$user->email = $args["email"];
+			
+			// Set the user role
+			$user->role = $args["role"];
+			// Check to make sure the user role is valid
+			if ($user->role != "administrator" && $user->role != "authenticated") {
+				// Return an error
+				return ["error" => "Invalid user role"];
+			}
+			
+			// Set the user type
+			$user->type = $args["type"];
+			// Check to make sure the user type is valid
+			if ($user->type != "local" && $user->type != "remote") {
+				// Return an error
+				return ["error" => "Invalid user type"];
+			}
+			
+			// Save the user
+			$user->save();
+			// Return true
+			return true;
+		}
+		// Catch any exceptions
+		catch (Exception $e) {
+			// Return an error
+			return ["error" => $e];
+		}
 	}
 }

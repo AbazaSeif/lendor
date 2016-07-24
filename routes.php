@@ -51,8 +51,8 @@ $app->map("/login", function () use ($app, $twig) {
 })->via("GET", "POST");
 
 // Profile route
-// GET
-$app->get("/profile/:username", function ($username) use ($app, $twig) {
+// GET, POST
+$app->map("/profile/:username", function ($username) use ($app, $twig) {
 	// Encapsulate any errors
 	try {
 		// Obtain the profile to view or fail
@@ -62,8 +62,8 @@ $app->get("/profile/:username", function ($username) use ($app, $twig) {
 	catch (Exception $e) {
 		// Set status to 404
 		$app->response->setStatus(404);
-		// Return from the function
-		return;
+		// Stop the request from going further
+		$app->stop();
 	}
 	// Require authentication
 	$user = Helper::auth_call([
@@ -76,8 +76,45 @@ $app->get("/profile/:username", function ($username) use ($app, $twig) {
 		// Require administrator role
 		"role" => "administrator"
 	]);
-	// If the authentication succeeded
-	if ($user) {
+	// The request is POST
+	if ($app->request->isPost()) {
+		// Get the post parameters
+		$post = $app->request->post();
+		// Attempt to update the user and store the status
+		$status = Helper::update_user($profile->id, $user->role, $post);
+		// Status says there was an error
+		if (is_array($status)) {
+			// Redner the profile page
+			echo $twig->render("profile.html", [
+				// Page title
+				"title" => "Lendor - Profile",
+				// Current user
+				"user" => $user,
+				// Viewed profile
+				"profile" => $profile,
+				// Error message
+				"error" => $status["error"]
+			]);
+		}
+		// User update went off without a hitch
+		else {
+			// Obtain the profile again as it has updated
+			$profile = User::where("username", "=", $username)->firstOrFail();
+			// Render the profile page
+			echo $twig->render("profile.html", [
+				// Page title
+				"title" => "Lendor - Profile",
+				// Current user
+				"user" => $user,
+				// Viewed profile
+				"profile" => $profile,
+				// Success message
+				"success" => "User has been updated"
+			]);
+		}
+	}
+	// The request is GET
+	else {
 		// Render the profile page
 		echo $twig->render("profile.html", [
 			// Page title
@@ -88,7 +125,7 @@ $app->get("/profile/:username", function ($username) use ($app, $twig) {
 			"profile" => $profile
 		]);
 	}
-});
+})->via("GET", "POST");
 
 // Logout route
 // GET
