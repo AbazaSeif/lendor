@@ -1,6 +1,8 @@
 # lendor
 Item lending and management system with a web interface
 
+[![Codeship](https://img.shields.io/codeship/d6c1ddd0-16a3-0132-5f85-2e35c05e22b1.svg?maxAge=2592000)]()
+
 # Note
 This project has not yet had it's first major version release, changes will be continuously made to this project. We cannot guarantee any safety or sanity across updates until the first major version release, at which point this project will follow a more strict standard of commits.
 
