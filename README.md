@@ -41,7 +41,3 @@ systemctl restart httpd
 
 # License
 GNU General Public License v3.0
-
-# TODO
-
-SELinux configuration makes LDAP not work for apache at first glance. Add instructions to allow LDAP connection through Apache using selinux into the documentation.
