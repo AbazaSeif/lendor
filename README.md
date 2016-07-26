@@ -1,7 +1,7 @@
 # lendor
 
-[![Codeship](https://img.shields.io/codeship/d6c1ddd0-16a3-0132-5f85-2e35c05e22b1.svg?maxAge=2592000)]()
-[![AUR](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)]()
+[![Build](https://img.shields.io/badge/build-failing-red.svg)]()
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)]()
 
 Item lending and management system with a web interface
 
