@@ -150,14 +150,26 @@ class Helper {
                 if ($user->type == "remote") {
                     // Connect to ldap server
                     $ldap_conn = ldap_connect($ldap["host"], $ldap["port"]);
-                    ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-                    ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
+                    // Set the ldap version
+                    ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, $ldap["ldap_version"]);
+                    ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+                    // TLS encryption was specified
+                    if ($ldap["tls_encryption"]) {
+                        // Start tls
+                        ldap_start_tls($ldap_conn);
+                    }
                     if (ldap_bind($ldap_conn, $ldap["bind_dn"], $ldap["bind_password"])) {
+                        // User filter with username subsituted in
                         $filter = sprintf($ldap["user_filter"], $user->username);
+                        // Search for the filter in the ldap database
                         $result = ldap_search($ldap_conn, $ldap["user_search_base"], $filter, ["*"]);
+                        // Obtain all entires from the search
                         $entries = ldap_get_entries($ldap_conn, $result);
+                        // If entries were provided
                         if ($entries) {
-                            if (ldap_bind($ldap_conn, $entries[0]["dn"], $args["password"])) {
+                            // Attempt to authenticate as the given ldap user
+                            if (ldap_bind($ldap_conn, $entries[0][$ldap["user_dn_attr"]], $args["password"])) {
+                                // Success? Return true
                                 return $user;
                             }
                         }
@@ -169,7 +181,7 @@ class Helper {
                 }
             }
             // Do nothing on a thrown error
-            catch (Exception $e) {}
+            catch (Exception $e) {print_r($e);}
         }
         // Default to false
         return false;

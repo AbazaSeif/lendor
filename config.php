@@ -8,7 +8,6 @@ $config = [
 	"debug" => true
     ],
     // Eloquent settings
-    // See - TODO
     "db" => [
         "driver" => "mysql",
         "host" => "localhost",
@@ -26,6 +25,8 @@ $config = [
         "host" => "ldap.forumsys.com",
         // LDAP port
         "port" => 389,
+        // LDAP version to use
+        "ldap_version" => 3,
         // LDAP admin bind dn
         "bind_dn" => "cn=read-only-admin,dc=example,dc=com",
         // LDAP admin bind password
@@ -34,8 +35,10 @@ $config = [
         "user_search_base" => "dc=example,dc=com",
         // User filter, %s is username
         "user_filter" => "(uid=%s)",
-        "tls_encryption" => true,
-        "tls_verify" => false
+        // User dn attribute name (usually just 'dn')
+        "user_dn_attr" => "dn",
+        // Whether to use ldap over tls
+        "tls_encryption" => false,
     ],
     // Miscellaneous settings
     "misc" => [
