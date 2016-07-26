@@ -1,28 +1,28 @@
 {% include "header.html" %}
 <div class="container">
-	{% include "navbar.html" %}
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="row">
-				<div class="col-xs-4 text-xs-center">Username</div>
-				<div class="col-xs-4 text-xs-center">Role</div>
-				<div class="col-xs-4 text-xs-center">Type</div>
-			</div>
-		</div>
-		{% for user in users %}
-		<a href="/profile/{{ user.username }}" class="list-group-item">
-			<div class="row">
-				<div class="col-xs-4 text-xs-center">{{ user.username }}</div>
-				<div class="col-xs-4 text-xs-center">{{ user.role }}</div>
-				<div class="col-xs-4 text-xs-center">{{ user.type }}</div>
-			</div>
-		</a>
-		{% endfor %}
-		<div class="row">
-			<div class="col-xs-12">
-				<a href="/admin/createuser" class="form-control btn btn-primary">New User</a>
-			</div>
-		</div>
-	</div>
+    {% include "navbar.html" %}
+    <div class="list-group">
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col-xs-4 text-xs-center">Username</div>
+                <div class="col-xs-4 text-xs-center">Role</div>
+                <div class="col-xs-4 text-xs-center">Type</div>
+            </div>
+        </div>
+        {% for user in users %}
+        <a href="/profile/{{ user.username }}" class="list-group-item">
+            <div class="row">
+                <div class="col-xs-4 text-xs-center">{{ user.username }}</div>
+                <div class="col-xs-4 text-xs-center">{{ user.role }}</div>
+                <div class="col-xs-4 text-xs-center">{{ user.type }}</div>
+            </div>
+        </a>
+        {% endfor %}
+        <div class="row">
+            <div class="col-xs-12">
+                <a href="/admin/createuser" class="form-control btn btn-primary">New User</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% include "footer.html" %}
