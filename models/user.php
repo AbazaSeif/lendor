@@ -30,7 +30,7 @@ class User extends Model {
                 // Model ID
                 $table->increments("id");
                 $table->string("username");
-                $table->string("password");
+                $table->string("password")->nullable();
                 $table->string("firstname")->nullable();
                 $table->string("lastname")->nullable();
                 $table->string("email")->nullable();

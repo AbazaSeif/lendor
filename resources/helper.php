@@ -169,7 +169,7 @@ class Helper {
                 }
             }
             // Do nothing on a thrown error
-            catch (Exception $e) { print_r($e); }
+            catch (Exception $e) {}
         }
         // Default to false
         return false;

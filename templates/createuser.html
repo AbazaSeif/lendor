@@ -28,18 +28,20 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="type">Type</label>
-                <select class="form-control c-select" name="type">
+                <select class="form-control c-select" name="type" onchange="show_hide(this)">
                     <option value="local">Local</option>
                     <option value="remote">Remote</option>
                 </select>
             </div>
-            <div class="form-group col-md-6">
-                <label for="password">New Password</label>
-                <input type="password" class="form-control" name="password">
-            </div>
-            <div class="form-group col-md-6">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" name="confirm_password">
+            <div id="password_group">
+                <div class="form-group col-md-6">
+                    <label for="password">New Password</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" class="form-control" name="confirm_password">
+                </div>
             </div>
             <div class="form-group col-xs-12">
                 <button type="submit" class="form-control btn btn-success">Create</button>
@@ -67,4 +69,13 @@
         </form>
     </div>
 </div>
+<script>
+    function show_hide (elem) {
+        if (elem.value == "remote") {
+            document.getElementById("password_group").style.display = "none";
+        } else {
+            document.getElementById("password_group").style.display = "initial";
+        }
+    }
+</script>
 {% include "footer.html" %}
