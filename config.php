@@ -20,6 +20,23 @@ $config = [
         "prefix" => "",
 	"date.timezone" => "America/New_York"
     ],
+    // LDAP settings
+    "ldap" => [
+        // LDAP host name
+        "host" => "ldap.forumsys.com",
+        // LDAP port
+        "port" => 389,
+        // LDAP admin bind dn
+        "bind_dn" => "cn=read-only-admin,dc=example,dc=com",
+        // LDAP admin bind password
+        "bind_password" => "password",
+        // Search base for users
+        "user_search_base" => "dc=example,dc=com",
+        // User filter, %s is username
+        "user_filter" => "(uid=%s)",
+        "tls_encryption" => true,
+        "tls_verify" => false
+    ],
     // Miscellaneous settings
     "misc" => [
 	// Timezone, required

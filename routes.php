@@ -19,11 +19,11 @@ $app->get("/", function () use ($app, $twig) {
 
 // Login route
 // GET, POST
-$app->map("/login", function () use ($app, $twig) {
+$app->map("/login", function () use ($app, $twig, $config) {
     // Request is POST
     if ($app->request()->isPost()) {
         // Check and store a user model on successful login
-        if ($user = Helper::valid_login($app->request->post())) {
+        if ($user = Helper::valid_login($app->request->post(), $config["ldap"])) {
             // Set the session variables
             $_SESSION["user_id"] = $user->id;
             // Redirect to the index route

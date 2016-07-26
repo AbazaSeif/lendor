@@ -139,18 +139,37 @@ class Helper {
      * @return User, or false
      *
      */ 
-    public static function valid_login ($args) {
+    public static function valid_login ($args, $ldap) {
         // Make sure the username and password are provided to use
         if (array_key_exists("username", $args) && array_key_exists("password", $args)) {
             // Ecapsulate any thrown exceptions
             try {
                 // Grab the user with the specified username or throw an exception
-                $user = User::where("username", "=", $args["username"])->firstOrFail();
-                // Return whether or not the login was valid, if true return the user
-                return password_verify($args["password"], $user->password) ? $user : false;
+                $user = User::where("username", "=", $args["username"])->firstOrFail(); 
+                // Remote user
+                if ($user->type == "remote") {
+                    // Connect to ldap server
+                    $ldap_conn = ldap_connect($ldap["host"], $ldap["port"]);
+                    ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+                    ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
+                    if (ldap_bind($ldap_conn, $ldap["bind_dn"], $ldap["bind_password"])) {
+                        $filter = sprintf($ldap["user_filter"], $user->username);
+                        $result = ldap_search($ldap_conn, $ldap["user_search_base"], $filter, ["*"]);
+                        $entries = ldap_get_entries($ldap_conn, $result);
+                        if ($entries) {
+                            if (ldap_bind($ldap_conn, $entries[0]["dn"], $args["password"])) {
+                                return $user;
+                            }
+                        }
+                    }
+                }
+                else {
+                    // Return whether or not the login was valid, if true return the user
+                    return password_verify($args["password"], $user->password) ? $user : false;
+                }
             }
             // Do nothing on a thrown error
-            catch (Exception $e) {}
+            catch (Exception $e) { print_r($e); }
         }
         // Default to false
         return false;
@@ -258,15 +277,18 @@ class Helper {
             // Return an error if a user is found
             return ["error" => "Username already exists"];
         } catch (Exception $e) {}
-        // Check for valid password
-        if (empty($args["password"])) {
-            // Return an error
-            return ["error" => "Password cannot be empty"];
-        }
-        // Check for matching password
-        if ($args["password"] != $args["confirm_password"]) {
-            // Return an error
-            return ["error" => "Password fields do not match"];
+        // No need to check password for remote users
+        if ($args["type"] != "remote") {
+            // Check for valid password
+            if (empty($args["password"])) {
+                // Return an error
+                return ["error" => "Password cannot be empty"];
+            }
+            // Check for matching password
+            if ($args["password"] != $args["confirm_password"]) {
+                // Return an error
+                return ["error" => "Password fields do not match"];
+            }
         }
         // Check for valid role
         if ($args["role"] != "administrator" && $args["role"] != "authenticated") {
