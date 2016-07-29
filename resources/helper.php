@@ -152,7 +152,6 @@ class Helper {
                     $ldap_conn = ldap_connect($ldap["host"], $ldap["port"]);
                     // Set the ldap version
                     ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, $ldap["ldap_version"]);
-                    ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
                     // TLS encryption was specified
                     if ($ldap["tls_encryption"]) {
                         // Start tls
@@ -181,7 +180,7 @@ class Helper {
                 }
             }
             // Do nothing on a thrown error
-            catch (Exception $e) {print_r($e);}
+            catch (Exception $e) {}
         }
         // Default to false
         return false;

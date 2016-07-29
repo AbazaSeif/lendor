@@ -25,3 +25,5 @@ $capsule->bootEloquent();
 
 // User migrate setup
 User::migrate();
+// Item migrate setup
+Item::migrate();

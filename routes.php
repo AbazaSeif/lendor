@@ -249,6 +249,9 @@ $app->group("/admin", function () use ($app, $twig) {
             ]);
         }
     });
+    $app->get("/items", function () use ($app, $twig) {
+        
+    });
 });
 
 // Logout route
