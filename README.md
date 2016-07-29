@@ -1,4 +1,8 @@
 # lendor
+
+[![Build](https://img.shields.io/badge/build-failing-red.svg)]()
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)]()
+
 Item lending and management system with a web interface
 
 # Note
@@ -8,7 +12,7 @@ If you see potential with this project, please feel free to contribute. We would
 
 # Install
 
-Clone the repository into `/var/www` or wherever your webserver document roots reside.
+Clone the repository into `/var/www` or wherever your webserver root folders reside.
 
 ```
 cd /var/www
@@ -27,13 +31,14 @@ Update the permissions of the cloned repository to match those that your web ser
 chown -R apache /var/www/lendor
 ```
 
-Update the project dependencies with composer. This repository assumes that you either have the global `composer` installed, or that you understand how to download and use composer
+Update the project dependencies with composer. If you're not sure what composer is, take a look at [this](https://getcomposer.org/).
 
 ```
+cd /var/www/lendor
 composer update
 ```
 
-Restart your web server. The following is an example with an apache setup.
+Restart your web server.
 
 ```
 systemctl restart httpd
